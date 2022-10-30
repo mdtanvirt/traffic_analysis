@@ -45,30 +45,40 @@ gcod_df = df.explode('geometry.coordinates')
 gcod_df = gcod_df.drop(['properties.streetnames'], axis=1)
 gcod_df[['lon','lat']] = pd.DataFrame(gcod_df["geometry.coordinates"].tolist(), index= gcod_df.index)
 
+# Explore for Street names ############
+gcod_street_df = df.explode('properties.streetnames')
+# Remove column name 'geometry.coordinates'
+gcod_street_df = gcod_street_df.drop(['geometry.coordinates'], axis=1)
+# Count unique street name
+total_no_street = gcod_street_df['properties.streetnames'].nunique()
+
+# Calculate most engageed streat and add new column
+#gcod_street_df= gcod_street_df['properties.streetnames'].value_counts(normalize=True)
+top_engaged_street_df = gcod_street_df['properties.streetnames'].value_counts().rename_axis('unique_street_name').reset_index(name='counts')
+
 # Layout and design for data visualization
-with st.sidebar:
-    nav_menu = option_menu("Main Menu", ["Dashboard", "Map", 'Raw Data'],
-        icons=['clipboard-data', 'map', 'gear'], menu_icon="cast", default_index=0)
+tab_dashboard, tab_map, tab_raw = st.tabs(["Dashboard", "Map", "Raw Data"])
+with st.container():
+    with tab_dashboard:
+        with st.sidebar:
+            nav_menu = option_menu("Main Menu", ["Dashboard", "Map", 'Raw Data'],
+                icons=['clipboard-data', 'map', 'gear'], menu_icon="cast", default_index=0)
+        col_taxis, col_trips, col_street = st.columns(3)
+        col_taxis.metric("Total", total_no_taxis)
+        col_trips.metric("Total", total_no_trips)
+        col_street.metric("Total", total_no_street)
+        st.dataframe(top_engaged_street_df)
 
-if nav_menu == "Dashboard":
-    st.header("Analysis Dashboard")
-    st.text("Total number of Taxis")
-    st.text(total_no_taxis)
-    st.text("Total number of Trips")
-    st.text(total_no_trips)
+    with tab_map:
+        st.text("Map Analysis")
+        st.map(gcod_df[['lon','lat']], zoom=11)
 
-    
-
-if nav_menu == "Map":
-    st.header("Analysis with Map")
-    st.map(gcod_df[['lon','lat']], zoom=11)
-
-if nav_menu == "Raw Data":
-    st.header("Raw data")
-    st.dataframe(df)
-    st.download_button(
-    label="Download data as CSV",
-    data=csv,
-    file_name='raw.csv',
-    mime='text/csv',
-    )
+    with tab_raw:
+        st.text("Raw Data")
+        st.dataframe(df)
+        st.download_button(
+        label="Download data as CSV",
+        data=csv,
+        file_name='raw.csv',
+        mime='text/csv',
+        )
