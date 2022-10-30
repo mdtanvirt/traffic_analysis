@@ -54,7 +54,8 @@ total_no_street = gcod_street_df['properties.streetnames'].nunique()
 
 # Calculate most engageed streat and add new column
 #gcod_street_df= gcod_street_df['properties.streetnames'].value_counts(normalize=True)
-top_engaged_street_df = gcod_street_df['properties.streetnames'].value_counts().rename_axis('unique_street_name').reset_index(name='counts')
+top_engaged_street_df = gcod_street_df['properties.streetnames'].value_counts().rename_axis('street').reset_index(name='counts')
+top_ten_street = top_engaged_street_df.nlargest(10, 'counts')
 
 # Layout and design for data visualization
 tab_dashboard, tab_map, tab_raw = st.tabs(["Dashboard", "Map", "Raw Data"])
@@ -67,14 +68,16 @@ with st.container():
         col_taxis.metric("Total", total_no_taxis)
         col_trips.metric("Total", total_no_trips)
         col_street.metric("Total", total_no_street)
-        st.dataframe(top_engaged_street_df)
 
     with tab_map:
         st.text("Map Analysis")
         st.map(gcod_df[['lon','lat']], zoom=11)
+        st.text("Top 10 Busy Road")
+        st.write(top_ten_street['street'])
+        st.area_chart(top_ten_street)
 
     with tab_raw:
-        st.text("Raw Data")
+        st.title("Raw Data")
         st.dataframe(df)
         st.download_button(
         label="Download data as CSV",
