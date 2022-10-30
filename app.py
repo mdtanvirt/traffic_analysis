@@ -50,3 +50,7 @@ if nav_menu == "Dashboard":
 
 if nav_menu == "Map":
     st.map(gcod_df[['lon','lat']], zoom=11)
+
+if nav_menu == "Raw Data":
+    st.dataframe(df)
+    st.button("Download")
