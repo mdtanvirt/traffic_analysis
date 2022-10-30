@@ -47,4 +47,6 @@ if nav_menu == "Dashboard":
     st.text(total_no_taxis)
     st.text("Total number of Trips")
     st.text(total_no_trips)
+
+if nav_menu == "Map":
     st.map(gcod_df[['lon','lat']], zoom=11)
