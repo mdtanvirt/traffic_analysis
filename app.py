@@ -23,6 +23,14 @@ with open('trips.json', 'r') as f:
 # Normalize data
 df = pd.json_normalize(data, record_path =['features'])
 
+# Convert to csv for download button
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
+
+csv = convert_df(df)
+
 # Count distinct values from taxi id column
 total_no_taxis = df['properties.taxiid'].nunique()
 
@@ -49,8 +57,15 @@ if nav_menu == "Dashboard":
     st.text(total_no_trips)
 
 if nav_menu == "Map":
+    st.header("Analysis with Map")
     st.map(gcod_df[['lon','lat']], zoom=11)
 
 if nav_menu == "Raw Data":
+    st.header("Raw data")
     st.dataframe(df)
-    st.button("Download")
+    st.download_button(
+    label="Download data as CSV",
+    data=csv,
+    file_name='large_df.csv',
+    mime='text/csv',
+    )
