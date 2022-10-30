@@ -66,6 +66,6 @@ if nav_menu == "Raw Data":
     st.download_button(
     label="Download data as CSV",
     data=csv,
-    file_name='large_df.csv',
+    file_name='raw.csv',
     mime='text/csv',
     )
