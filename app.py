@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import pandas as pd
+import pydeck as pdk
 from streamlit_option_menu import option_menu
 
 st.set_page_config(layout="wide")
@@ -55,6 +56,8 @@ if nav_menu == "Dashboard":
     st.text(total_no_taxis)
     st.text("Total number of Trips")
     st.text(total_no_trips)
+
+    
 
 if nav_menu == "Map":
     st.header("Analysis with Map")
