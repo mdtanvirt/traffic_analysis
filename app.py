@@ -29,6 +29,13 @@ total_no_taxis = df['properties.taxiid'].nunique()
 # Count distinct values from trip id column
 total_no_trips = df['properties.tripid'].nunique()
 
+# Explore coordinate with lat lng from data set
+## Explore for coordinates
+gcod_df = df.explode('geometry.coordinates')
+## Remove column name 'properties.streetnames'
+gcod_df = gcod_df.drop(['properties.streetnames'], axis=1)
+gcod_df[['lon','lat']] = pd.DataFrame(gcod_df["geometry.coordinates"].tolist(), index= gcod_df.index)
+
 # Layout and design for data visualization
 with st.sidebar:
     nav_menu = option_menu("Main Menu", ["Dashboard", "Map", 'Raw Data'],
@@ -40,3 +47,4 @@ if nav_menu == "Dashboard":
     st.text(total_no_taxis)
     st.text("Total number of Trips")
     st.text(total_no_trips)
+    st.map(gcod_df[['lon','lat']], zoom=11)
