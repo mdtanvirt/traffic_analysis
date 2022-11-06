@@ -57,6 +57,9 @@ total_no_street = gcod_street_df['properties.streetnames'].nunique()
 top_engaged_street_df = gcod_street_df['properties.streetnames'].value_counts().rename_axis('street').reset_index(name='counts')
 top_ten_street = top_engaged_street_df.nlargest(10, 'counts')
 
+top_speed_df = gcod_street_df['properties.maxspeed'].value_counts().rename_axis('Top Speed').reset_index(name='counts')
+top_ten_speed = top_speed_df.nlargest(10, 'counts')
+
 # Layout and design for data visualization
 tab_dashboard, tab_map, tab_raw = st.tabs(["Dashboard", "Map", "Raw Data"])
 with st.container():
@@ -72,9 +75,15 @@ with st.container():
     with tab_map:
         st.text("Map Analysis")
         st.map(gcod_df[['lon','lat']], zoom=11)
-        st.text("Top 10 Busy Road")
-        st.write(top_ten_street['street'])
-        st.area_chart(top_ten_street)
+        col_topstreet, col_speed, col_pichart = st.columns(3)
+        with col_topstreet:
+             st.text("Top 10 Busy Road")
+             st.write(top_ten_street['street'])
+        with col_speed:
+             st.text("Top 10 Speed in K.M")
+             st.write(gcod_street_df)
+        with col_pichart:
+            st.area_chart(top_ten_street)
 
     with tab_raw:
         st.title("Raw Data")
