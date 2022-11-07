@@ -2,6 +2,7 @@ import streamlit as st
 import json
 import pandas as pd
 import pydeck as pdk
+from streamlit_timeline import timeline
 from streamlit_option_menu import option_menu
 
 st.set_page_config(layout="wide")
@@ -55,38 +56,44 @@ total_no_street = gcod_street_df['properties.streetnames'].nunique()
 # Calculate most engageed streat and add new column
 #gcod_street_df= gcod_street_df['properties.streetnames'].value_counts(normalize=True)
 top_engaged_street_df = gcod_street_df['properties.streetnames'].value_counts().rename_axis('street').reset_index(name='counts')
-top_ten_street = top_engaged_street_df.nlargest(10, 'counts')
+top_ten_street = top_engaged_street_df.nlargest(10, 'counts').set_index('street')
 
 top_speed_df = gcod_street_df['properties.maxspeed'].value_counts().rename_axis('Top Speed').reset_index(name='counts')
 top_ten_speed = top_speed_df.nlargest(10, 'counts')
 
-# Layout and design for data visualization
-tab_dashboard, tab_map, tab_raw = st.tabs(["Dashboard", "Map", "Raw Data"])
-with st.container():
-    with tab_dashboard:
-        with st.sidebar:
-            nav_menu = option_menu("Main Menu", ["Dashboard", "Map", 'Raw Data'],
-                icons=['clipboard-data', 'map', 'gear'], menu_icon="cast", default_index=0)
-        col_taxis, col_trips, col_street = st.columns(3)
-        col_taxis.metric("Total", total_no_taxis)
-        col_trips.metric("Total", total_no_trips)
-        col_street.metric("Total", total_no_street)
+# data frame for line chart trips over time
+taxi_trips_time = df[['properties.tripid', 'properties.starttime']].copy().set_index('properties.starttime')
 
-    with tab_map:
-        st.text("Map Analysis")
-        st.map(gcod_df[['lon','lat']], zoom=11)
-        col_topstreet, col_speed, col_pichart = st.columns(3)
+# Layout and design for data visualization
+st.header("Traffic Analysis")
+tab_dashboard, tab_raw = st.tabs(["Dashboard", "Raw Data"])
+with st.container():
+    with st.sidebar:
+        nav_menu = option_menu("Main Menu", ["Dashboard", "Map", 'Raw Data'],
+            icons=['clipboard-data', 'map', 'gear'], menu_icon="cast", default_index=0)
+
+    with tab_dashboard:
+        st.subheader("Summary:")
+        col_taxis, col_trips, col_street = st.columns(3)
+        col_taxis.metric("Total No. Taxis", total_no_taxis)
+        col_trips.metric("Total No. Trips", total_no_trips)
+        col_street.metric("Total No. Street Engage", total_no_street)
+        st.subheader("Traffic On Map:")
+        st.map(gcod_df[['lon','lat']], zoom=11, )
+        col_topstreet, col_pichart = st.columns(2)
         with col_topstreet:
-             st.text("Top 10 Busy Road")
-             st.write(top_ten_street['street'])
-        with col_speed:
-             st.text("Top 10 Speed in K.M")
-             st.write(gcod_street_df)
+             st.subheader("Top 10 Busy Road:")
+             st.write(top_ten_street)
         with col_pichart:
-            st.area_chart(top_ten_street)
+            st.subheader("Bar chart:")
+            st.bar_chart(top_ten_street)
+
+        # Line chart taxies vs trips over time
+        st.write(taxi_trips_time)
+        st.line_chart(taxi_trips_time)
 
     with tab_raw:
-        st.title("Raw Data")
+        st.subheader("Raw Data")
         st.dataframe(df)
         st.download_button(
         label="Download data as CSV",
