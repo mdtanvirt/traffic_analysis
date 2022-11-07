@@ -61,9 +61,6 @@ top_ten_street = top_engaged_street_df.nlargest(10, 'counts').set_index('street'
 top_speed_df = gcod_street_df['properties.maxspeed'].value_counts().rename_axis('Top Speed').reset_index(name='counts')
 top_ten_speed = top_speed_df.nlargest(10, 'counts')
 
-# data frame for line chart trips over time
-taxi_trips_time = df[['properties.tripid', 'properties.starttime']].copy().set_index('properties.starttime')
-
 # Layout and design for data visualization
 st.header("Traffic Analysis")
 tab_dashboard, tab_raw = st.tabs(["Dashboard", "Raw Data"])
@@ -87,10 +84,6 @@ with st.container():
         with col_pichart:
             st.subheader("Bar chart:")
             st.bar_chart(top_ten_street)
-
-        # Line chart taxies vs trips over time
-        st.write(taxi_trips_time)
-        st.line_chart(taxi_trips_time)
 
     with tab_raw:
         st.subheader("Raw Data")
