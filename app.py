@@ -2,7 +2,6 @@ import streamlit as st
 import json
 import pandas as pd
 import pydeck as pdk
-from streamlit_timeline import timeline
 from streamlit_option_menu import option_menu
 
 st.set_page_config(layout="wide")
