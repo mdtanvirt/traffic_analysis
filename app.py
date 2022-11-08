@@ -71,9 +71,15 @@ with st.container():
     with tab_dashboard:
         st.subheader("Summary:")
         col_taxis, col_trips, col_street = st.columns(3)
-        col_taxis.metric("Total No. Taxis", total_no_taxis)
-        col_trips.metric("Total No. Trips", total_no_trips)
-        col_street.metric("Total No. Street Engage", total_no_street)
+        with col_taxis:
+            st.write("Total Number of Taxis")
+            st.success(total_no_taxis)
+        with col_trips:
+            st.write("Total Trips")
+            st.success(total_no_trips)
+        with col_street:
+            st.write("Total number of Street Engaged")
+            st.success(total_no_street)
         st.subheader("Traffic On Map:")
         st.map(gcod_df[['lon','lat']], zoom=11, )
         col_topstreet, col_pichart = st.columns(2)
