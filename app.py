@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import pandas as pd
+import numpy as np
 import pydeck as pdk
 from streamlit_option_menu import option_menu
 
@@ -74,19 +75,37 @@ with st.container():
         with col_taxis:
             st.write("Total Number of Taxis")
             st.success(total_no_taxis)
+
         with col_trips:
             st.write("Total Trips")
             st.success(total_no_trips)
+
         with col_street:
             st.write("Total number of Street Engaged")
             st.success(total_no_street)
+
         st.subheader("Traffic On Map:")
         st.map(gcod_df[['lon','lat']], zoom=11, )
         col_topstreet, col_pichart = st.columns(2)
+
         with col_topstreet:
              st.subheader("Top 10 Busy Road:")
              st.write(top_ten_street)
+
         with col_pichart:
+            st.subheader("Bar chart:")
+            st.bar_chart(top_ten_street)
+
+        col_dist_ave_speed, col_line_chart = st.columns(2)
+        with col_dist_ave_speed:
+            st.subheader("Ave.Speeed vs Max.Speed vs Distance vs Duration:")
+            df2 = df
+            df2 = pd.DataFrame(df2, columns=['properties.tripid', 'properties.avspeed', 'properties.distance', 'properties.maxspeed', 'properties.duration'])
+            df2.rename(columns = {'properties.tripid':'Trip Id', 'properties.avspeed':'Average Speed', 'properties.maxspeed':'Max Speed', 'properties.duration': 'Duration'}, inplace = True)
+            df2 = df2.round(decimals = 2).set_index('Trip Id')
+            st.write(df2)
+            
+        with col_line_chart:
             st.subheader("Bar chart:")
             st.bar_chart(top_ten_street)
 
