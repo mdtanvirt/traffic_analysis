@@ -66,8 +66,8 @@ st.header("Traffic Analysis")
 tab_dashboard, tab_raw = st.tabs(["Dashboard", "Raw Data"])
 with st.container():
     with st.sidebar:
-        nav_menu = option_menu("Main Menu", ["Dashboard", "Map", 'Raw Data'],
-            icons=['clipboard-data', 'map', 'gear'], menu_icon="cast", default_index=0)
+        st.subheader("Top 10 Busy Road:")
+        st.write(top_ten_street)
 
     with tab_dashboard:
         st.subheader("Summary:")
@@ -86,28 +86,23 @@ with st.container():
 
         st.subheader("Traffic On Map:")
         st.map(gcod_df[['lon','lat']], zoom=11, )
-        col_topstreet, col_pichart = st.columns(2)
 
-        with col_topstreet:
-             st.subheader("Top 10 Busy Road:")
-             st.write(top_ten_street)
+        col_dist_ave_speed, col_pichart = st.columns(2)
+        with col_dist_ave_speed:
+            st.subheader("Ave.Speeed vs Max.Speed vs Distance vs Duration:")
+            df2 = df
+            df2 = pd.DataFrame(df2, columns=['properties.tripid', 'properties.avspeed', 'properties.maxspeed', 'properties.duration'])
+            df2.rename(columns = {'properties.tripid':'Trip Id', 'properties.avspeed':'Average Speed', 'properties.maxspeed':'Max Speed', 'properties.duration': 'Duration'}, inplace = True)
+            df2 = df2.round(decimals = 2).set_index('Trip Id').nlargest(100, ['Average Speed'])
+            st.write(df2)
 
         with col_pichart:
             st.subheader("Bar chart:")
             st.bar_chart(top_ten_street)
 
-        col_dist_ave_speed, col_line_chart = st.columns(2)
-        with col_dist_ave_speed:
-            st.subheader("Ave.Speeed vs Max.Speed vs Distance vs Duration:")
-            df2 = df
-            df2 = pd.DataFrame(df2, columns=['properties.tripid', 'properties.avspeed', 'properties.distance', 'properties.maxspeed', 'properties.duration'])
-            df2.rename(columns = {'properties.tripid':'Trip Id', 'properties.avspeed':'Average Speed', 'properties.maxspeed':'Max Speed', 'properties.duration': 'Duration'}, inplace = True)
-            df2 = df2.round(decimals = 2).set_index('Trip Id')
-            st.write(df2)
-            
-        with col_line_chart:
-            st.subheader("Bar chart:")
-            st.bar_chart(top_ten_street)
+        st.subheader("Line chart for Ave.Speeed vs Max.Speed vs Distance vs Duration:")
+        df3 = df2.nlargest(100, ['Average Speed'])
+        st.line_chart(df3)
 
     with tab_raw:
         st.subheader("Raw Data")
