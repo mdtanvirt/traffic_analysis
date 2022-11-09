@@ -45,6 +45,13 @@ gcod_df = df.explode('geometry.coordinates')
 ## Remove column name 'properties.streetnames'
 gcod_df = gcod_df.drop(['properties.streetnames'], axis=1)
 gcod_df[['lon','lat']] = pd.DataFrame(gcod_df["geometry.coordinates"].tolist(), index= gcod_df.index)
+gcod_df_df = gcod_df
+gcod_df_df['startdatetime'] = pd.to_datetime(gcod_df_df['properties.starttime'])
+gcod_df_df['year'] = gcod_df_df['startdatetime'].dt.year
+gcod_df_df['month'] = gcod_df_df['startdatetime'].dt.month
+gcod_df_df['date'] = gcod_df_df['startdatetime'].dt.date
+gcod_df_df['hour'] = gcod_df_df['startdatetime'].dt.hour
+gcod_df_df['minute'] = gcod_df_df['startdatetime'].dt.minute
 
 # Explore for Street names ############
 gcod_street_df = df.explode('properties.streetnames')
@@ -103,6 +110,7 @@ with st.container():
         st.subheader("Line chart for Ave.Speeed vs Max.Speed vs Distance vs Duration:")
         df3 = df2.nlargest(100, ['Average Speed'])
         st.line_chart(df3)
+        st.write(gcod_df_df)
 
     with tab_raw:
         st.subheader("Raw Data")
