@@ -158,7 +158,7 @@ with st.container():
             title = {'text': "Top Speed in Avg. Column"}))
             st.plotly_chart(fig, use_container_width=True)
 
-        st.write(gcod_group_trip_top)
+        #st.write(gcod_group_trip_top)
 
     with tab_raw:
         st.subheader("Raw Data")
