@@ -2,11 +2,7 @@ import streamlit as st
 import json
 import pandas as pd
 import numpy as np
-import pydeck as pdk
-import altair as alt
-import matplotlib.pyplot as plt
 import plotly.express as px
-import seaborn as sns
 import plotly.graph_objects as go
 from streamlit_option_menu import option_menu
 
